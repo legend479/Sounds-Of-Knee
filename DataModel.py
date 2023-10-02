@@ -122,10 +122,10 @@ plt.show()
 
 # make health data graph
 
-heart_rate = health_data[0]
-blood_oxygen = health_data[1]
-sys_pressure = health_data[2]
-dia_pressure = health_data[3]
+heart_rate = health_data[2]
+blood_oxygen = health_data[3]
+sys_pressure = health_data[0]
+dia_pressure = health_data[1]
 
 plt.figure(figsize=(10, 6))
 plt.plot(heart_rate)
