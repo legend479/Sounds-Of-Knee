@@ -67,8 +67,8 @@ PubSubClient mqttClient(server, mqttport, client);
 #define CSE_PORT 5089
 #define OM2M_ORGIN "admin:admin"
 #define OM2M_MN "/~/in-cse/in-name/"
-#define OM2M_AE "Health-Data"
-#define OM2M_DATA_CONT "Pulse_Oximeter"
+#define OM2M_AE "AE-TEST"
+#define OM2M_DATA_CONT "User-Patterns"
 
 #define RESET_PIN 4
 #define MFIO_PIN 5
@@ -199,14 +199,25 @@ void publish_to_om2m(String data,String label)
 {
     //   String label = "Label";
     // String data;
-    String server = "http://" + String() + CSE_IP + ":" + String() + CSE_PORT + String() + OM2M_MN;
+    String server = "http://" + String() + CSE_IP + ":" + String() + CSE_PORT + String() + OM2M_MN + String() + OM2M_AE + "/" + String() + OM2M_DATA_CONT + "/";
     Serial.println(server);
+    
+    if (label=="Label-1")
+      server += "Flex_Sensor"
+    else if(label=="Label-2")
+      server += "Health_Sensor"
+    else if(label=="Label-3")
+      server += "Peizo_Sensor"
+    else if(label=="Label-4")
+      server += "Microphone"
+    else if(label=="Label-5")
+      server += "EMG_Sensor"
 
-    http.begin(server + String() + OM2M_AE + "/" + OM2M_DATA_CONT + "/");
+    http.begin(server);    
 
     http.addHeader("X-M2M-Origin", OM2M_ORGIN);
     http.addHeader("Content-Type", "application/json;ty=4");
-    http.addHeader("Content-Length", "100");
+    // http.addHeader("Content-Length", "100");
 
     // data = "[" + String(systole) + ", " + String(diastole) + ", " + String(hr) + ", " + String(spo2) + "]"; 
     String req_data = String() + "{\"m2m:cin\": {"
@@ -230,23 +241,23 @@ void publish_to_om2m(String data,String label)
 }
 void loop(){
 
-  while (!mqttClient.connected()){
-    if(mqttClient.connect(mqttClientID, mqttUserName, mqttpass)){
-      Serial.print("MQTT to ");
-      Serial.print( server);
-      Serial.print(" at port ");
-      Serial.print( mqttport );
-      Serial.println(" successful.");
-    }
-    else {
-      Serial.print("MQTT connection failed, rc = ");
-      Serial.print( mqttClient.state() );
-      Serial.println(" Will try again in a second.");
-      delay(1000);
-    }
-  }
+//   while (!mqttClient.connected()){
+//     if(mqttClient.connect(mqttClientID, mqttUserName, mqttpass)){
+//       Serial.print("MQTT to ");
+//       Serial.print( server);
+//       Serial.print(" at port ");
+//       Serial.print( mqttport );
+//       Serial.println(" successful.");
+//     }
+//     else {
+//       Serial.print("MQTT connection failed, rc = ");
+//       Serial.print( mqttClient.state() );
+//       Serial.println(" Will try again in a second.");
+//       delay(1000);
+//     }
+//   }
 
-  mqttClient.loop();
+//   mqttClient.loop();
 
   uint8_t num_samples = MAX32664.readSamples();
 
@@ -272,41 +283,40 @@ void loop(){
     // Serial.println(MAX32664.max32664Output.spo2);
     Serial.println(spo2);
 
-    //MQTT
-    mqttPublish(writeChannelID, writeAPIKey);
+//     //MQTT
+//     mqttPublish(writeChannelID, writeAPIKey);
 
-    // OM2M
+//     // OM2M
 
-    // String label = "Label";
-    String data;
-    // String server = "http://" + String() + CSE_IP + ":" + String() + CSE_PORT + String() + OM2M_MN;
+//     // String label = "Label";
+//     String data;
+//     // String server = "http://" + String() + CSE_IP + ":" + String() + CSE_PORT + String() + OM2M_MN;
 
-    // http.begin(server + String() + OM2M_AE + "/" + OM2M_DATA_CONT + "/");
+//     // http.begin(server + String() + OM2M_AE + "/" + OM2M_DATA_CONT + "/");
 
-    // http.addHeader("X-M2M-Origin", OM2M_ORGIN);
-    // http.addHeader("Content-Type", "application/json;ty=4");
-    // http.addHeader("Content-Length", "100");
+//     // http.addHeader("X-M2M-Origin", OM2M_ORGIN);
+//     // http.addHeader("Content-Type", "application/json;ty=4");
+//     // http.addHeader("Content-Length", "100");
 
     data = "[" + String(systole) + ", " + String(diastole) + ", " + String(hr) + ", " + String(spo2) + "]"; 
-    publish_to_om2m(data,"Label-2");
-    // String req_data = String() + "{\"m2m:cin\": {"
+//    // String req_data = String() + "{\"m2m:cin\": {"
 
-    //   +
-    //   "\"con\": \"" + data + "\","
+//     //   +
+//     //   "\"con\": \"" + data + "\","
 
-    //   +
-    //   "\"lbl\": \"" + label + "\","
+//     //   +
+//     //   "\"lbl\": \"" + label + "\","
 
-    //   // + "\"rn\": \"" + "Entry "+String(i++) + "\","
+//     //   // + "\"rn\": \"" + "Entry "+String(i++) + "\","
 
-    //   // +
-    //   // "\"cnf\": \"text\""
+//     //   // +
+//     //   // "\"cnf\": \"text\""
 
-    //   +
-    //   "}}";
-    // int code = http.POST(req_data);
-    // http.end();
-    // Serial.println(code);
+//     //   +
+//     //   "}}";
+//     // int code = http.POST(req_data);
+//     // http.end();
+//     // Serial.println(code);
   }
 float VCC = 4.98; // Measured voltage of Ardunio 5V line
 float R_DIV = 47500.0; // Measured resistance of 3.3k resistor
@@ -327,13 +337,13 @@ Serial.println("Bend: " + String(angle) + " degrees");
 Serial.println();
 
 int flex_sensor_value=analogRead(flexSensorpin);
-Serial.print("Flex Sensor value");
+Serial.print("Flex Sensor value: ");
 Serial.println(angle);
 Serial.println(flex_sensor_value);
 
 
 int sound_value=analogRead(sound_pin);
-Serial.print("Electronic Spices Microphone Value");
+Serial.print("Electronic Microphone Value: ");
 Serial.println(sound_value);
 
 int piezo_value=analogRead(piezoelectric_sensor);
@@ -341,7 +351,7 @@ Serial.print("Piezoelectricc Sensor value");
 Serial.println(piezo_value);
 
 int emg_value=analogRead(emg_pin);
-Serial.print("emg value:");
+Serial.print("emg value: ");
 Serial.println(emg_value);
 
 String emg_to_publish=String(emg_value);
@@ -349,10 +359,11 @@ String piezo_publish=String(piezo_value);
 String sound_publish=String(sound_value);
 String flex_to_publish=String(flex_sensor_value);
 
+publish_to_om2m(data,"Label-2");
 publish_to_om2m(emg_to_publish,"Label-5");
 publish_to_om2m(piezo_publish,"Label-3");
 publish_to_om2m(sound_publish,"Label-4");
-publish_to_om2m(flex_to_publish,"Label-2");
+publish_to_om2m(flex_to_publish,"Label-1");
 // String dataString = "field1="+String(hr)+"&field2="+String(systole)+"&field3="+String(diastole)+"&field4="+String(spo2);
 // void mqttPublish(long writeChannelID, char* pubWriteAPIKey,String dataString)
   delay(100);
