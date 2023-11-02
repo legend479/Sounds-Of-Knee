@@ -6,15 +6,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram 
 import pywt
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.optimizers import Adam
 
 
 # get data through GET request from OM2M server
 
-url_sound = "http://127.0.0.1:5089/~/in-cse/in-name/AE-TEST/Microphone/Data?rcn=4"
-url_pressure = "http://127.0.0.1:5089/~/in-cse/in-name/AE-TEST/Peizo_Sensor/Data?rcn=4"
-url_health = "http://127.0.0.1:5089/~/in-cse/in-name/AE-TEST/Health_Sensor/Data?rcn=4"
-url_flex = "http://127.0.0.1:5089/~/in-cse/in-name/AE-TEST/Flex_Sensor/Data?rcn=4"
-url_emg = "http://127.0.0.1:5089/~/in-cse/in-name/AE-TEST/EMG_Sensor/Data?rcn=4"
+url_sound = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Microphone/"
+url_pressure = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Peizo_Sensor/"
+url_health = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Health_Sensor/"
+url_flex = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Flex_Sensor/"
+url_emg = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/EMG_Sensor/"
 
 payload = {}
 headers = {
@@ -38,10 +41,10 @@ print(flex_data)
 
 
 # wavelet transform for emg data
-wavelet = 'db4'
-level = 4
+# wavelet = 'db4'
+# level = 4
 
-coeffs = pywt.wavedec(emg_data, wavelet, level=level)
+# coeffs = pywt.wavedec(emg_data, wavelet, level=level)
 
 # make a spectrogram for the sound data
 
@@ -155,7 +158,27 @@ plt.show()
 
 
 
-# make a KNN model that takes in (EMG, pressure, sound) and predicts the knee health in score of 100
+# make a neural network that takes in (EMG, pressure, sound) and predicts the knee health in score of 100
+
+# Generating random input data
+# You can replace this with your actual input data
+np.random.seed(42)
+X = np.random.rand(100, 3)  # 100 samples, 3 features
+
+# Generating random output data within the range of 0-100
+y = np.random.uniform(0, 100, 100)
+
+# Creating a neural network model
+model = Sequential()
+model.add(Dense(8, input_dim=3, activation='relu'))  # 8 neurons in the hidden layer
+model.add(Dense(1, activation='linear'))  # Output layer with linear activation
+
+# Compiling the model
+model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
+
+# Training the model
+model.fit(X, y, epochs=50, batch_size=10, verbose=1)
+
  
 
 
