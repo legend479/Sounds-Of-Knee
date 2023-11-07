@@ -14,10 +14,10 @@ from keras.optimizers import Adam
 # get data through GET request from OM2M server
 
 url_sound = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Microphone/"
-url_pressure = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Peizo_Sensor/"
+# url_pressure = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Peizo_Sensor/"
 url_health = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Health_Sensor/"
 url_flex = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Flex_Sensor/"
-url_emg = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/EMG_Sensor/"
+# url_emg = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/EMG_Sensor/"
 
 payload = {}
 headers = {
@@ -26,15 +26,15 @@ headers = {
 }
 
 sound_data = rq.request("GET", url_sound, headers=headers, data=payload)
-pressure_data = rq.request("GET", url_pressure, headers=headers, data=payload)
+# pressure_data = rq.request("GET", url_pressure, headers=headers, data=payload)
 health_data = rq.request("GET", url_health, headers=headers, data=payload)
-emg_data = rq.request("GET", url_emg, headers=headers, data=payload)
+# emg_data = rq.request("GET", url_emg, headers=headers, data=payload)
 flex_data = rq.request("GET", url_flex, headers=headers, data=payload)
 
 print(sound_data)
-print(pressure_data)
+# print(pressure_data)
 print(health_data)
-print(emg_data)
+# print(emg_data)
 print(flex_data)
 
 # extract data from json file
@@ -76,7 +76,7 @@ plt.ylabel('Frequency (Hz)')
 plt.title('Spectrogram of Voltage Data')
 plt.show()
 
-
+'''
 # make a graph for the pressure data
 
 threshold = 3000 # threshold for pressure sensor
@@ -111,6 +111,8 @@ for i in range(1, level+2):
 
 plt.tight_layout()
 plt.show()
+
+'''
 
 # make a graph for the flex sensor data
 
@@ -158,7 +160,7 @@ plt.show()
 
 
 
-# make a neural network that takes in (EMG, pressure, sound) and predicts the knee health in score of 100
+# neural network that takes in (EMG, pressure, sound) and predicts the knee health in score of 100
 
 # Generating random input data
 # You can replace this with your actual input data
