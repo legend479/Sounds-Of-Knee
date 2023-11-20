@@ -85,9 +85,9 @@ void setup(){
 
   Serial.begin(115200);
   pinMode(18, OUTPUT);  // Set SCL (pin 18) as output
-pinMode(19, OUTPUT);  // Set SDA (pin 19) as output
-digitalWrite(18, HIGH);  // Set SCL (pin 18) to HIGH
-digitalWrite(19, HIGH);  // Set SDA (pin 19) to HIGH
+  pinMode(19, OUTPUT);  // Set SDA (pin 19) as output
+  digitalWrite(18, HIGH);  // Set SCL (pin 18) to HIGH
+  digitalWrite(19, HIGH);  // Set SDA (pin 19) to HIGH
   mpu.initialize();
   WiFi.begin(ssid ,password);
   while (WiFi.status() != WL_CONNECTED) {

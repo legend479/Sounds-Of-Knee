@@ -180,7 +180,3 @@ model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
 
 # Training the model
 model.fit(X, y, epochs=50, batch_size=10, verbose=1)
-
- 
-
-
