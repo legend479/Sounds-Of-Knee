@@ -7,8 +7,8 @@
 
 #define mqttport 1883
 
-char ssid[] = "iPhone_atp";
-char password[] = "1 2 3 4 5 6 7";
+char ssid[] = "Sonam gupta bewafa he";
+char password[] = "mujhekyametohhuhinhi";
 const char* server = "mqtt3.thingspeak.com";
 char mqttUserName[] = "FCoPExU9MAUQISkGCBEDCz0";
 char mqttClientID[] = "FCoPExU9MAUQISkGCBEDCz0";
@@ -20,7 +20,7 @@ char writeAPIKey[] = "XVEHO8NYR0DRP5KQ";
 WiFiClient client;
 PubSubClient mqttClient(server, mqttport, client);
 
-#define CSE_IP "192.168.207.133"
+#define CSE_IP "192.168.151.251"
 #define CSE_PORT 5089
 #define OM2M_ORGIN "admin:admin"
 #define OM2M_MN "/~/in-cse/in-name/"
@@ -93,44 +93,6 @@ void setup(){
   Serial.println(WiFi.localIP());
 
   mqttClient.setServer(server, mqttport);
-
-  Wire.begin();
-
-  loadAlgomodeParameters();
-
-  int result = MAX32664.hubBegin();
-  if (result == CMD_SUCCESS){
-    Serial.println("Sensorhub begin!");
-  }else{
-    //stay here.
-    while(1){
-      Serial.println("Could not communicate with the sensor! please make proper connections");
-      delay(5000);
-    }
-  }
-
-  bool ret = MAX32664.startBPTcalibration();
-  while(!ret){
-
-    delay(10000);
-    Serial.println("failed calib, please retsart");
-    //ret = MAX32664.startBPTcalibration();
-  }
-
-  delay(1000);
-
-  //Serial.println("start in estimation mode");
-  ret = MAX32664.configAlgoInEstimationMode();
-  while(!ret){
-
-    //Serial.println("failed est mode");
-    ret = MAX32664.configAlgoInEstimationMode();
-    delay(10000);
-  }
-
-  //MAX32664.enableInterruptPin();
-  Serial.println("Getting the device ready..");
-  delay(1000);
 }
 
 void mqttConnect(){
@@ -165,18 +127,14 @@ void publish_to_om2m(String data,String label)
     //   String label = "Label";
     // String data;
     String server = "http://" + String() + CSE_IP + ":" + String() + CSE_PORT + String() + OM2M_MN + String() + OM2M_AE + "/" + String() + OM2M_DATA_CONT + "/";
-    Serial.println(server);
     
     if (label=="Label-1")
-      server += "Flex_Sensor"
-    else if(label=="Label-2")
-      server += "Health_Sensor"
-    else if(label=="Label-3")
-      server += "Peizo_Sensor"
+      server += "Flex_Sensor";
+
     else if(label=="Label-4")
-      server += "Microphone"
-    else if(label=="Label-5")
-      server += "EMG_Sensor"
+      server += "Microphone";
+
+    Serial.println(server);
 
     http.begin(server);    
 
@@ -188,10 +146,10 @@ void publish_to_om2m(String data,String label)
     String req_data = String() + "{\"m2m:cin\": {"
 
       +
-      "\"con\": \"" + data + "\","
+      "\"con\": \"" + "[" + data + "]" + "\","
 
       +
-      "\"lbl\": \"" + label + "\","
+      "\"lbl\": \"" + label + "\""
 
       // + "\"rn\": \"" + "Entry "+String(i++) + "\","
 
@@ -200,21 +158,22 @@ void publish_to_om2m(String data,String label)
 
       +
       "}}";
+      Serial.println(req_data);
     int code = http.POST(req_data);
     http.end();
-    // Serial.println(code);
+    Serial.println(code);
 }
 
 void loop(){
 
   // Serial.println("start in estimation mode");
   float VCC = 4.98; // Measured voltage of Ardunio 5V line
-  float R_DIV = 47500.0; // Measured resistance of 3.3k resistor
+  float R_DIV = 11000.0; // Measured resistance of 3.3k resistor
 
   // Upload the code, then try to adjust these values to more
   // accurately calculate bend degree.
-  float STRAIGHT_RESISTANCE = 37300.0; // resistance when straight
-  float BEND_RESISTANCE = 90000.0; // resistance at 90 deg
+  float STRAIGHT_RESISTANCE = 38600.0; // resistance when straight
+  float BEND_RESISTANCE = 108000.0; // resistance at 90 deg
   int flexADC = analogRead(flexSensorpin);
   float flexV = flexADC * VCC / 1023.0;
   float flexR = R_DIV * (VCC / flexV - 1.0);
@@ -222,18 +181,18 @@ void loop(){
 
   // Use the calculated resistance to estimate the sensor's
   // bend angle:
-  float angle = map(flexR, STRAIGHT_RESISTANCE, BEND_RESISTANCE, 0, 90.0);
-  Serial.println("Bend: " + String(angle) + " degrees");
-  Serial.println();
+  // float angle = map(flexR, STRAIGHT_RESISTANCE, BEND_RESISTANCE, 0, 90.0);
+  // Serial.println("Bend: " + String(angle) + " degrees");
+  // Serial.println();
 
   int flex_sensor_value=analogRead(flexSensorpin);
-  Serial.print("Flex Sensor value: ");
-  Serial.println(angle);
-  Serial.println(flex_sensor_value);
+  // Serial.print("Flex Sensor value: ");
+  // Serial.println(angle);
+  // Serial.println(flex_sensor_value);
 
 
   int sound_value=analogRead(sound_pin);
-  Serial.print("Electronic Microphone Value: ");
+  // Serial.print("Electronic Microphone Value: ");
   Serial.println(sound_value);
 
   String sound_publish=String(sound_value);
@@ -242,5 +201,7 @@ void loop(){
   publish_to_om2m(sound_publish,"Label-4");
   publish_to_om2m(flex_to_publish,"Label-1");
 
-  delay(100);
+  // publish to mqtt
+
+  delay(50);
 }

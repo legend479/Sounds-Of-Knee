@@ -1,22 +1,23 @@
 # Model to preict Knee Health Based on EMG, pressure and sound data
-import flask as fl
+# import flask as fl
 import requests as rq
-import json as js
+# import json as js
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram 
-import pywt
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.optimizers import Adam
-
+# import pywt
+# from keras.models import Sequential
+# from keras.layers import Dense
+# from keras.optimizers import Adam
+# print("hello")
+IP = "192.168.151.251"
 
 # get data through GET request from OM2M server
 
-url_sound = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Microphone/"
+url_sound = "http://"+IP+"/~/in-cse/in-name/AE-TEST/User-Patterns/Microphone/la"
 # url_pressure = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Peizo_Sensor/"
-url_health = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Health_Sensor/"
-url_flex = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/Flex_Sensor/"
+url_health = "http://"+IP+"/~/in-cse/in-name/AE-TEST/User-Patterns/Health_Sensor/la"
+url_flex = "http://"+IP+"/~/in-cse/in-name/AE-TEST/User-Patterns/Flex_Sensor/la"
 # url_emg = "http://192.168.137.1:5089/~/in-cse/in-name/AE-TEST/EMG_Sensor/"
 
 payload = {}
@@ -26,17 +27,30 @@ headers = {
 }
 
 sound_data = rq.request("GET", url_sound, headers=headers, data=payload)
+print(sound_data.status_code)
+# print(sound_data)
+
 # pressure_data = rq.request("GET", url_pressure, headers=headers, data=payload)
 health_data = rq.request("GET", url_health, headers=headers, data=payload)
+print(health_data.status_code)
+# print(health_data)
+
 # emg_data = rq.request("GET", url_emg, headers=headers, data=payload)
 flex_data = rq.request("GET", url_flex, headers=headers, data=payload)
+print(flex_data.status_code)
+# print(flex_data)
+
+sound_data = sound_data.json()['m2m:cin']['con'] # extract data from json file
+# pressure_data = pressure_data.json()['m2m:cin']['con'] # extract data from json file
+health_data = health_data.json()['m2m:cin']['con'] # extract data from json file
+# emg_data = emg_data.json()['m2m:cin']['con'] # extract data from json file
+flex_data = flex_data.json()['m2m:cin']['con']
 
 print(sound_data)
 # print(pressure_data)
 print(health_data)
 # print(emg_data)
 print(flex_data)
-
 # extract data from json file
 
 
@@ -164,19 +178,19 @@ plt.show()
 
 # Generating random input data
 # You can replace this with your actual input data
-np.random.seed(42)
-X = np.random.rand(100, 3)  # 100 samples, 3 features
+# np.random.seed(42)
+# X = np.random.rand(100, 3)  # 100 samples, 3 features
 
-# Generating random output data within the range of 0-100
-y = np.random.uniform(0, 100, 100)
+# # Generating random output data within the range of 0-100
+# y = np.random.uniform(0, 100, 100)
 
-# Creating a neural network model
-model = Sequential()
-model.add(Dense(8, input_dim=3, activation='relu'))  # 8 neurons in the hidden layer
-model.add(Dense(1, activation='linear'))  # Output layer with linear activation
+# # Creating a neural network model
+# model = Sequential()
+# model.add(Dense(8, input_dim=3, activation='relu'))  # 8 neurons in the hidden layer
+# model.add(Dense(1, activation='linear'))  # Output layer with linear activation
 
-# Compiling the model
-model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
+# # Compiling the model
+# model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
 
-# Training the model
-model.fit(X, y, epochs=50, batch_size=10, verbose=1)
+# # Training the model
+# model.fit(X, y, epochs=50, batch_size=10, verbose=1)
